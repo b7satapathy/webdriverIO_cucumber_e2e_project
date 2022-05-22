@@ -88,3 +88,70 @@ Then(/^navigate back to home screen (.*)$/, async function (homeUrl) {
   await browser.back();
   chai.expect(homeUrl).to.equal(await browser.getUrl());
 });
+
+/**
+ * Web Interaction : User Input
+ * 1- Assert default option is selected
+ * 2- Select by attribute, text, index
+ * 3- Get a list of options
+ */
+
+Given(/^user is on the (.*)$/, async function (homepage) {
+  await browser.url("");
+  await browser.setTimeout({ implicit: 15000, pageLoad: 10000 });
+});
+
+When(
+  /^scroll down to dropdown button and then wait and then click on it$/,
+  async function () {
+    let dropdownButton = await $("=Dropdown");
+    await dropdownButton.scrollIntoView();
+    await browser.pause(2000);
+    await dropdownButton.click();
+  }
+);
+
+// Then(/^verify user navigated to (.*)$/, async function (dropdownPageUrl) {
+//   //let pageUrl = await browser.getUrl();
+//   //await browser.pause(2000);
+//   console.log(await browser.getUrl());
+//   //chai.expect(pageUrl).to.equal(dropdownPageUrl);
+// });
+
+Then(
+  /^click on the dropdown and select second option and verify (.*)$/,
+  async function (selectedValue) {
+    //get the list of options using xpath
+    //let listOfEleArr = await $$("//select/option");
+
+    //get the list of options using CSS Selector
+    let listOfEleArr = await $$(`select > option`);
+    let arr = [];
+    for (let i = 0; i < listOfEleArr.length; i++) {
+      arr.push(await listOfEleArr[i].getText());
+    }
+
+    console.log(arr);
+
+    //check if default option is selected
+    let selectedEle = await $('//select/option[@selected="selected"]');
+    let defaultVal = await selectedEle.getText();
+    chai.expect(defaultVal).to.equal("Please select an option");
+
+    //select a specific option i.e second dropdown
+    let dropdownEle = await $("#dropdown");
+    await dropdownEle.selectByVisibleText("Option 2");
+
+    // select by attribute and index
+    //await dropdownEle.selectByAttribute("value", "2");
+    //await dropdownEle.selectByIndex(2);
+
+    //console.log(arr.includes(selectedValue));
+    //chai.expect(arr[2]).to.equal(selectedValue);
+  }
+);
+
+Then(/^navigate back to home screen (.*)$/, async function (homepage) {
+  await browser.back();
+  chai.expect(homepage).to.equal(await browser.getUrl());
+});
